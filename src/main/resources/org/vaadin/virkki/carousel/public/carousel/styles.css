@@ -43,16 +43,9 @@
 
 .carousel .childwrapper {
 	position: relative;
-	width: 1em;
-	height: 100%;
-}
-
-.v-ff .carousel .childwrapper {
-	display: table;
 }
 
 .carousel .childwrapper > * {
-	font-size: 12px;
 	position: absolute;
 }
 

@@ -46,6 +46,7 @@ class CarouselWidget extends FocusPanel {
 	int startLeft
 	int repositionTreshold
 	int width = 1
+	int height = 1
 
 	@Property boolean animationFallback
 	int animTargetLeft
@@ -166,6 +167,7 @@ class CarouselWidget extends FocusPanel {
 			val panel = it
 			addDomHandler([index = childPanel.getWidgetIndex(panel)], TouchStartEvent::type)
 			addDomHandler([index = childPanel.getWidgetIndex(panel)], MouseDownEvent::type)
+			setPixelSize(width, height)
 		]
 	}
 
@@ -320,15 +322,18 @@ class CarouselWidget extends FocusPanel {
 		minimizePaddings
 	}
 
-	def setCarouselWidth(int width) {
+	def setCarouselSize(int width, int height) {
 		this.width = Math::max(width, 1)
+		this.height = Math::max(height, 1)
+		
 		removeStyleName(STYLE_TRANSITIONED)
 
 		childPanel.element.style => [
-			setFontSize(width, PX)
 			setLeft(index * -width - currentMarginLeft, PX)
 			setMarginLeft(currentMarginLeft, PX)
 		]
+		
+		childPanel.forEach[setPixelSize(width, height)]
 
 		repositionTreshold = widgets.size / 2 * width
 		onUpdate(0)
