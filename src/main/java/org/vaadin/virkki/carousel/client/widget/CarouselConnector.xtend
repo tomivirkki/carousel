@@ -27,14 +27,14 @@ class CarouselConnector extends AbstractComponentContainerConnector {
 	}
 
 	val ElementResizeListener listener = [
-		widget.setCarouselSize(layoutManager.getInnerWidth(element),layoutManager.getInnerHeight(element))
+		widget.setCarouselSize(layoutManager.getInnerWidth(element), layoutManager.getInnerHeight(element))
 	]
 
 	override init() {
 		super.init
 		layoutManager.addElementResizeListener(widget.element, listener)
-		registerRpc(typeof(CarouselClientScrollRpc), [widget.scroll(it)])
-		registerRpc(typeof(CarouselClientScrollToRpc),[widget.scrollTo(it)])
+		registerRpc(typeof(CarouselClientScrollRpc))[widget.scroll(it)]
+		registerRpc(typeof(CarouselClientScrollToRpc))[widget.scrollTo(it)]
 	}
 
 	override CarouselState getState() {
@@ -67,11 +67,13 @@ class CarouselConnector extends AbstractComponentContainerConnector {
 
 }
 
-interface CarouselServerRpc extends CarouselWidgetListener, ServerRpc{	
+interface CarouselServerRpc extends CarouselWidgetListener, ServerRpc {
 }
-interface CarouselClientScrollRpc extends ClientRpc{
+
+interface CarouselClientScrollRpc extends ClientRpc {
 	def void scroll(int change)
 }
-interface CarouselClientScrollToRpc extends ClientRpc{
+
+interface CarouselClientScrollToRpc extends ClientRpc {
 	def void scrollTo(int componentIndex)
 }

@@ -24,7 +24,6 @@
 }
 
 .carousel .childpanel {
-	height: 100%;
 	position: absolute;
 	-webkit-transition: none 1s ease-out;
 	-moz-transition: none 1s ease-out;
@@ -39,14 +38,6 @@
 	-o-transition-property: left;
 	-ms-transition-property: left;
 	transition-property: left;
-}
-
-.carousel .childwrapper {
-	position: relative;
-}
-
-.carousel .childwrapper > * {
-	position: absolute;
 }
 
 .carousel .placeholder {

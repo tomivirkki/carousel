@@ -84,7 +84,7 @@ class CarouselWidget extends FocusPanel {
 		new Button => [
 			styleName = STYLE_CAROUSEL_BUTTON
 			addStyleName = if(left) STYLE_LEFT_BUTTON else STYLE_RIGHT_BUTTON
-			addClickHandler([scroll(if(left) -1 else 1)])
+			addClickHandler[scroll(if(left) -1 else 1)]
 		]
 	}
 
@@ -118,16 +118,14 @@ class CarouselWidget extends FocusPanel {
 	def setArrowKeysMode(ArrowKeysMode arrowKeysMode) {
 		arrowKeysHandler?.removeHandler
 		arrowKeysHandler = if (arrowKeysMode != null && arrowKeysMode != ArrowKeysMode::DISABLED) {
-			arrowKeysHandler = Event::addNativePreviewHandler(
-				[
-					if (Event::getTypeInt(nativeEvent.type) == Event::ONKEYDOWN &&
-						(arrowKeysMode == ArrowKeysMode::ALWAYS || hasFocus)) {
-						switch (nativeEvent.keyCode) {
-							case KeyCodes::KEY_RIGHT: scroll(1)
-							case KeyCodes::KEY_LEFT: scroll(-1)
-						}
-					}])
-
+			arrowKeysHandler = Event::addNativePreviewHandler [
+				if (Event::getTypeInt(nativeEvent.type) == Event::ONKEYDOWN &&
+					(arrowKeysMode == ArrowKeysMode::ALWAYS || hasFocus)) {
+					switch (nativeEvent.keyCode) {
+						case KeyCodes::KEY_RIGHT: scroll(1)
+						case KeyCodes::KEY_LEFT: scroll(-1)
+					}
+				}]
 		}
 	}
 
@@ -185,21 +183,20 @@ class CarouselWidget extends FocusPanel {
 		runTimer.cancel
 		anim.cancel
 		moveHandler?.removeHandler
-		moveHandler = Event::addNativePreviewHandler(
-			[
-				switch Event::getTypeInt(nativeEvent.type) {
-					case Event::ONMOUSEMOVE:
-						onDragMove(nativeEvent.screenX)
-					case Event::ONTOUCHMOVE:
-						onDragMove(nativeEvent.touches.get(0).screenX)
-					case Event::ONMOUSEUP:
-						onDragEnd()
-					case Event::ONTOUCHEND:
-						onDragEnd()
-				}
-				nativeEvent.stopPropagation
-				nativeEvent.preventDefault
-			])
+		moveHandler = Event::addNativePreviewHandler[
+			switch Event::getTypeInt(nativeEvent.type) {
+				case Event::ONMOUSEMOVE:
+					onDragMove(nativeEvent.screenX)
+				case Event::ONTOUCHMOVE:
+					onDragMove(nativeEvent.touches.get(0).screenX)
+				case Event::ONMOUSEUP:
+					onDragEnd()
+				case Event::ONTOUCHEND:
+					onDragEnd()
+			}
+			nativeEvent.stopPropagation
+			nativeEvent.preventDefault
+		]
 
 		onDragMove(position)
 		tailPosition = position
@@ -325,15 +322,15 @@ class CarouselWidget extends FocusPanel {
 	def setCarouselSize(int width, int height) {
 		this.width = Math::max(width, 1)
 		this.height = Math::max(height, 1)
-		
+
 		removeStyleName(STYLE_TRANSITIONED)
+
+		childPanel.forEach[setPixelSize(width, height)]
 
 		childPanel.element.style => [
 			setLeft(index * -width - currentMarginLeft, PX)
 			setMarginLeft(currentMarginLeft, PX)
 		]
-		
-		childPanel.forEach[setPixelSize(width, height)]
 
 		repositionTreshold = widgets.size / 2 * width
 		onUpdate(0)
@@ -352,4 +349,3 @@ class CarouselWidget extends FocusPanel {
 		}
 	}
 }
-
