@@ -1,0 +1,9 @@
+widgetsets/
+gwt-unitCache/
+xtend-gen/
+generated-sources/
+.classpath
+.project
+.settings
+target/
+*.launch
