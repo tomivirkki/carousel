@@ -25,6 +25,7 @@ class CarouselWidget extends FocusPanel {
 	val static STYLE_TRANSITIONED = "transitioned"
 	val static STYLE_CHILD_PANEL_WRAPPER = "childpanelwrapper"
 	val static STYLE_CHILD_PANEL = "childpanel"
+	val static STYLE_CHILD_WRAPPER = "childwrapper"
 	val static STYLE_CAROUSEL_BUTTON = "carouselbutton"
 	val static STYLE_LEFT_BUTTON = "leftbutton"
 	val static STYLE_RIGHT_BUTTON = "rightbutton"
@@ -161,7 +162,7 @@ class CarouselWidget extends FocusPanel {
 
 	def private wrap(Widget widget) {
 		new SimplePanel(widget) => [
-			styleName = "childwrapper"
+			styleName = STYLE_CHILD_WRAPPER
 			val panel = it
 			addDomHandler([index = childPanel.getWidgetIndex(panel)], TouchStartEvent::type)
 			addDomHandler([index = childPanel.getWidgetIndex(panel)], MouseDownEvent::type)

@@ -27,7 +27,7 @@ class CarouselConnector extends AbstractComponentContainerConnector {
 	}
 
 	val ElementResizeListener listener = [
-		widget.carouselWidth = layoutManager.getOuterWidth(element)
+		widget.carouselWidth = layoutManager.getInnerWidth(element)
 	]
 
 	override init() {
