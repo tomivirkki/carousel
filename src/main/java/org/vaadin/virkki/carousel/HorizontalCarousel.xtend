@@ -15,6 +15,7 @@ public class HorizontalCarousel extends AbstractComponentContainer implements Ca
 
 	List<Component> components = newArrayList
 	List<ComponentSelectListener> listeners = newArrayList
+	var Component selectedComponent
 
 	new() {
 		registerRpc(this)
@@ -138,7 +139,11 @@ public class HorizontalCarousel extends AbstractComponentContainer implements Ca
 
 	override widgetSelected(int selectedIndex) {
 		if (selectedIndex >= 0 && selectedIndex < components.size) {
-			listeners.forEach[componentSelected(components.get(selectedIndex))]
+			val selected = components.get(selectedIndex)
+			if (selected != selectedComponent){
+				listeners.forEach[componentSelected(selected)]
+				selectedComponent = selected
+			}
 		}
 	}
 
