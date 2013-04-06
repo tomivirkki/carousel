@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.Button
 import com.google.gwt.user.client.ui.CellPanel
 import com.google.gwt.user.client.ui.FlowPanel
 import com.google.gwt.user.client.ui.FocusPanel
+import com.google.gwt.user.client.ui.HorizontalPanel
 import com.google.gwt.user.client.ui.SimplePanel
 import com.google.gwt.user.client.ui.Widget
 import java.util.List
@@ -19,8 +20,8 @@ abstract class CarouselWidgetBase extends FocusPanel {
 	val static STYLE_CHILD_PANEL_WRAPPER = "childpanelwrapper"
 	val static STYLE_CHILD_PANEL = "childpanel"
 	val static STYLE_CAROUSEL_BUTTON = "carouselbutton"
-	val static STYLE_LEFT_BUTTON = "leftbutton"
-	val static STYLE_RIGHT_BUTTON = "rightbutton"
+	val static STYLE_PREVIOUS_BUTTON = "previousbutton"
+	val static STYLE_NEXT_BUTTON = "nextbutton"
 
 	protected List<Widget> widgets = newArrayList
 	val protected List<CarouselWidgetListener> listeners = newArrayList
@@ -31,8 +32,8 @@ abstract class CarouselWidgetBase extends FocusPanel {
 
 	boolean hasFocus
 
-	val leftButton = getCarouselButton(true)
-	val rightButton = getCarouselButton(false)
+	val previousButton = getCarouselButton(true)
+	val nextButton = getCarouselButton(false)
 
 	@Property CarouselLoadMode loadMode
 	HandlerRegistration arrowKeysHandler
@@ -44,8 +45,8 @@ abstract class CarouselWidgetBase extends FocusPanel {
 		widget = new FlowPanel => [
 			styleName = STYLE_CAROUSEL_PANEL
 			add(new SimplePanel(childPanel) => [styleName = STYLE_CHILD_PANEL_WRAPPER])
-			add(leftButton)
-			add(rightButton)
+			add(previousButton)
+			add(nextButton)
 		]
 
 		addFocusHandler[hasFocus = true]
@@ -54,17 +55,17 @@ abstract class CarouselWidgetBase extends FocusPanel {
 
 	def protected CellPanel createChildPanel()
 
-	def private getCarouselButton(boolean left) {
+	def private getCarouselButton(boolean previous) {
 		new Button => [
 			styleName = STYLE_CAROUSEL_BUTTON
-			addStyleName = if(left) STYLE_LEFT_BUTTON else STYLE_RIGHT_BUTTON
-			addClickHandler[scroll(if(left) -1 else 1)]
+			addStyleName = if(previous) STYLE_PREVIOUS_BUTTON else STYLE_NEXT_BUTTON
+			addClickHandler[scroll(if(previous) -1 else 1)]
 		]
 	}
 
 	def setButtonsVisible(boolean visible) {
-		leftButton.setVisible(visible)
-		rightButton.setVisible(visible)
+		previousButton.setVisible(visible)
+		nextButton.setVisible(visible)
 	}
 
 	def setMouseWheelEnabled(boolean enabled) {
@@ -84,8 +85,10 @@ abstract class CarouselWidgetBase extends FocusPanel {
 				if (Event::getTypeInt(nativeEvent.type) == Event::ONKEYDOWN &&
 					(arrowKeysMode == ArrowKeysMode::ALWAYS || hasFocus)) {
 					switch (nativeEvent.keyCode) {
-						case KeyCodes::KEY_RIGHT: scroll(1)
-						case KeyCodes::KEY_LEFT: scroll(-1)
+						case KeyCodes::KEY_RIGHT: if (horizontal) scroll(1)
+						case KeyCodes::KEY_LEFT: if (horizontal) scroll(-1)
+						case KeyCodes::KEY_DOWN: if (!horizontal) scroll(1)
+						case KeyCodes::KEY_UP: if (!horizontal) scroll(-1)
 					}
 				}]
 		}
@@ -121,5 +124,9 @@ abstract class CarouselWidgetBase extends FocusPanel {
 	}
 
 	def protected void scrollToPanelIndex(int _index)
+	
+	def protected boolean isHorizontal() {
+		childPanel.class == typeof(HorizontalPanel)
+	}
 
 }

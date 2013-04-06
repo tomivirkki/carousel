@@ -13,28 +13,33 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 	int lastPosition
 	int tailPosition
 	int startPosition
-	int startLeft
+	int panelStartPosition
 
 	@Property int swipeSensitivity = 20
 	HandlerRegistration touchStartHandler
 	HandlerRegistration mouseDragHandler
 	HandlerRegistration moveHandler
 
-
 	def setMouseDragEnabled(boolean enabled) {
 		mouseDragHandler?.removeHandler
 		mouseDragHandler = if (enabled)
-			childPanel.addDomHandler([onDragStart(screenX)], MouseDownEvent::type)
+			childPanel.addDomHandler([onDragStart(if(horizontal) screenX else screenY)], MouseDownEvent::type)
 	}
 
 	def setTouchDragEnabled(boolean enabled) {
 		touchStartHandler?.removeHandler
-		touchStartHandler = if (enabled)
-			childPanel.addDomHandler([onDragStart(touches.get(0).screenX)], TouchStartEvent::type)
+		touchStartHandler = if (enabled) {
+			childPanel.addDomHandler(
+				[
+					onDragStart(
+						if(horizontal) touches.get(0).screenX else touches.get(0).screenY
+					)], TouchStartEvent::type)
+		}
 	}
 
 	def private onDragStart(int position) {
-		startLeft = childPanel.element.absoluteLeft
+		val elem = childPanel.element
+		panelStartPosition = if(horizontal) elem.absoluteLeft else elem.absoluteTop
 		startPosition = position
 		runTimer.cancel
 		anim.cancel
@@ -42,9 +47,9 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 		moveHandler = Event::addNativePreviewHandler[
 			switch Event::getTypeInt(nativeEvent.type) {
 				case Event::ONMOUSEMOVE:
-					onDragMove(nativeEvent.screenX)
+					onDragMove(if(horizontal) nativeEvent.screenX else nativeEvent.screenY)
 				case Event::ONTOUCHMOVE:
-					onDragMove(nativeEvent.touches.get(0).screenX)
+					onDragMove(if(horizontal) nativeEvent.touches.get(0).screenX else nativeEvent.touches.get(0).screenY)
 				case Event::ONMOUSEUP:
 					onDragEnd()
 				case Event::ONTOUCHEND:
@@ -60,10 +65,10 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 
 	def private onDragMove(int position) {
 		removeStyleName(STYLE_TRANSITIONED)
-		childPanel.element.style.setLeft(
-			startLeft - startPosition + position - currentMarginLeft - element.offsetLeft,
-			PX
-		)
+
+		val offset = if(horizontal) element.offsetLeft else element.offsetTop
+		val newPosition = panelStartPosition - startPosition + position - currentMargin - offset
+		setChildPanelPosition(newPosition)
 
 		lastPosition = position
 		val Timer timer = [|tailPosition = position]
@@ -71,11 +76,11 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 	}
 
 	def private onDragEnd() {
-		val velocityShift = (tailPosition - lastPosition) * swipeSensitivity / width
+		val velocityShift = (tailPosition - lastPosition) * swipeSensitivity / measure
 		if (velocityShift != 0) {
 			scroll(velocityShift)
 		} else {
-			val dragLength = (startPosition - lastPosition) / width as double
+			val dragLength = (startPosition - lastPosition) / measure as double
 			var dragShift = if(Math::abs(dragLength) < 0.5) 0 else Math::signum(dragLength) as int
 
 			scroll(dragShift)

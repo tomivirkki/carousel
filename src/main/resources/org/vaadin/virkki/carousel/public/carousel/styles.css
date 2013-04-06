@@ -33,11 +33,11 @@
 }
 
 .carousel.transitioned .childpanel {
-	-webkit-transition-property: left;
-	-moz-transition-property: left;
-	-o-transition-property: left;
-	-ms-transition-property: left;
-	transition-property: left;
+	-webkit-transition-property: left, top;
+	-moz-transition-property: left, top;
+	-o-transition-property: left, top;
+	-ms-transition-property: left, top;
+	transition-property: left, top;
 }
 
 .carousel .placeholder {
@@ -48,16 +48,22 @@
 
 .carousel .carouselbutton {
 	position: absolute;
-	top: 0;
-	height: 100%;
-	width: 50px;
 	background: transparent;
 	border: none;
 	cursor: pointer;
 }
+.carousel.horizontalcarousel .carouselbutton {
+	height: 100%;
+	width: 50px;
+	top: 0;
+}
+.carousel.verticalcarousel .carouselbutton {
+	height: 50px;
+	width: 100%;
+}
+
 .carousel .carouselbutton:AFTER{
 	content: "";
-	top: 50%;
 	position: absolute;
 	border: 7px solid transparent;
 }
@@ -65,17 +71,32 @@
 	background-color: #ccc;
 	background-color: rgba(0,0,0,0.2);
 }
-.carousel .leftbutton {
+
+.carousel.horizontalcarousel .previousbutton {
 	left: 0;
 }
-.carousel .leftbutton:AFTER {
+.carousel.horizontalcarousel .nextbutton {
+	right: 0;
+}
+.carousel.verticalcarousel .previousbutton {
+	top: 0;
+}
+.carousel.verticalcarousel .nextbutton {
+	bottom: 0;
+}
+.carousel.horizontalcarousel .previousbutton:AFTER {
 	border-right-color: #000;
 	right: 50%;
 }
-.carousel .rightbutton {
-	right: 0;
-}
-.carousel .rightbutton:AFTER {
+.carousel.horizontalcarousel .nextbutton:AFTER {
 	border-left-color: #000;
 	left: 50%;
+}
+.carousel.verticalcarousel .previousbutton:AFTER {
+	border-bottom-color: #000;
+	bottom: 50%;
+}
+.carousel.verticalcarousel .nextbutton:AFTER {
+	border-top-color: #000;
+	top: 50%;
 }

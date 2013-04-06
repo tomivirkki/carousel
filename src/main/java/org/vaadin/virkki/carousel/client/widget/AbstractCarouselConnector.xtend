@@ -1,6 +1,5 @@
 package org.vaadin.virkki.carousel.client.widget
 
-import com.google.gwt.core.client.GWT
 import com.vaadin.client.BrowserInfo
 import com.vaadin.client.ComponentConnector
 import com.vaadin.client.ConnectorHierarchyChangeEvent
@@ -10,21 +9,13 @@ import com.vaadin.client.ui.AbstractComponentContainerConnector
 import com.vaadin.client.ui.layout.ElementResizeListener
 import com.vaadin.shared.communication.ClientRpc
 import com.vaadin.shared.communication.ServerRpc
-import com.vaadin.shared.ui.Connect
-import org.vaadin.virkki.carousel.HorizontalCarousel
+import org.vaadin.virkki.carousel.client.widget.gwt.CarouselWidgetBase
 import org.vaadin.virkki.carousel.client.widget.gwt.CarouselWidgetListener
-import org.vaadin.virkki.carousel.client.widget.gwt.HorizontalCarouselWidget
+import org.vaadin.virkki.carousel.client.widget.gwt.DraggableCarouselWidget
 
 @SuppressWarnings("serial")
-@Connect(typeof(HorizontalCarousel))
-class CarouselConnector extends AbstractComponentContainerConnector {
-
-	override protected createWidget() {
-		GWT::create(typeof(HorizontalCarouselWidget)) => [
-			val rpc = RpcProxy::create(typeof(CarouselServerRpc), this)
-			(it as HorizontalCarouselWidget).addListener(rpc)
-		]
-	}
+abstract class AbstractCarouselConnector extends AbstractComponentContainerConnector {
+	val protected rpc = RpcProxy::create(typeof(CarouselServerRpc), this)
 
 	val ElementResizeListener listener = [
 		widget.setCarouselSize(layoutManager.getInnerWidth(element), layoutManager.getInnerHeight(element))
@@ -41,8 +32,8 @@ class CarouselConnector extends AbstractComponentContainerConnector {
 		super.getState() as CarouselState
 	}
 
-	override HorizontalCarouselWidget getWidget() {
-		super.widget as HorizontalCarouselWidget
+	override DraggableCarouselWidget getWidget() {
+		super.widget as DraggableCarouselWidget
 	}
 
 	override onStateChanged(StateChangeEvent stateChangeEvent) {

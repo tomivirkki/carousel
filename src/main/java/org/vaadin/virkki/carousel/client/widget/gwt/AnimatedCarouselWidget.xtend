@@ -23,12 +23,12 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	int prependedChildren
 	int repositionTreshold
 
-	protected int width = 1
-	protected int height = 1
+	int width = 1
+	int height = 1
 
 	@Property boolean animationFallback
-	int animTargetLeft
-	int animStartLeft
+	int animTargetPosition
+	int animStartPosition
 
 	@Property CarouselLoadMode loadMode
 	int transitionDuration = 1000
@@ -57,6 +57,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 			listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
 		}
 
+		onUpdate(0)
 	}
 
 	def private wrap(Widget widget) {
@@ -69,8 +70,8 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 		]
 	}
 
-	def protected getCurrentMarginLeft() {
-		prependedChildren * -width
+	def protected getCurrentMargin() {
+		prependedChildren * -measure
 	}
 
 	override protected scrollToPanelIndex(int _index) {
@@ -80,10 +81,15 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
 		addStyleName(STYLE_TRANSITIONED)
 
-		animStartLeft = childPanel.element.absoluteLeft - currentMarginLeft - element.offsetLeft
-		animTargetLeft = index * -width - currentMarginLeft
+		animStartPosition = if (horizontal) {
+			childPanel.element.absoluteLeft - currentMargin - element.offsetLeft
+		} else {
+			childPanel.element.absoluteTop - currentMargin - element.offsetTop
+		}
+
+		animTargetPosition = index * -measure - currentMargin
 		if (!animationFallback) {
-			childPanel.element.style.setLeft(animTargetLeft, PX)
+			setChildPanelPosition(animTargetPosition)
 		}
 
 		anim.run(transitionDuration)
@@ -104,7 +110,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
 			index = index + 1
 			prependedChildren = prependedChildren + 1
-			childPanel.element.style.setMarginLeft(currentMarginLeft, PX)
+			updateChildPanelMargin
 		}
 	}
 
@@ -117,30 +123,32 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 			childPanel.remove(0)
 			index = index - 1
 			prependedChildren = prependedChildren - 1
-			childPanel.element.style.setMarginLeft(currentMarginLeft, PX)
+			updateChildPanelMargin
 		}
 	}
 
 	def private onUpdate(double progress) {
 		if (animationFallback && progress < 1.0) {
-			val newLeft = animTargetLeft - (animTargetLeft - animStartLeft) * (1.0 - progress)
-			childPanel.element.style.setLeft(newLeft, PX)
+			val newPosition = animTargetPosition - (animTargetPosition - animStartPosition) * (1.0 - progress)
+			setChildPanelPosition(newPosition)
 		}
 
 		for (w : widgets) {
 			val wrapper = w.parent as SimplePanel
-			if (Math::abs(wrapper.element.absoluteLeft) > repositionTreshold) {
+			val wrapperPosition = if(horizontal) wrapper.element.absoluteLeft else wrapper.element.absoluteTop
+			if (Math::abs(wrapperPosition) > repositionTreshold) {
 				val newIndex = childPanel.getWidgetIndex(wrapper) -
-					widgets.size * Math::signum(wrapper.element.absoluteLeft) as int
+					widgets.size * Math::signum(wrapperPosition) as int
 				getWrapper(newIndex).widget = wrapper?.widget
 			}
 		}
 	}
 
 	def protected onAnimationEnd() {
-		if (animationFallback) {
-			childPanel.element.style.setLeft(animTargetLeft, PX)
+		if (!animationFallback) {
+			setChildPanelPosition(animTargetPosition)
 		}
+
 		if (widgets.exists[class == typeof(PlaceHolder)] &&
 			(loadMode == CarouselLoadMode::SMART || selectedWidget.class == typeof(PlaceHolder))) {
 			listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
@@ -157,12 +165,10 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
 		childPanel.forEach[setPixelSize(width, height)]
 
-		childPanel.element.style => [
-			setLeft(index * -width - currentMarginLeft, PX)
-			setMarginLeft(currentMarginLeft, PX)
-		]
+		setChildPanelPosition(index * -measure - currentMargin)
+		updateChildPanelMargin
 
-		repositionTreshold = widgets.size / 2 * width
+		repositionTreshold = widgets.size / 2 * measure
 		onUpdate(0)
 
 		addStyleName(STYLE_TRANSITIONED)
@@ -177,7 +183,29 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 		for (browserPrefix : newArrayList("webkit", "Moz", "ms", "O")) {
 			style.setProperty(browserPrefix + propertyName.toFirstUpper, value)
 		}
-	} //	def protected int getMeasure()
-//	
-//	def protected String getMeasureProperty()
+	}
+
+	def protected int getMeasure() {
+		if(horizontal) width else height
+	}
+
+	def protected setChildPanelPosition(double position) {
+		childPanel.element.style => [
+			if (horizontal) {
+				setLeft(position, PX)
+			} else {
+				setTop(position, PX)
+			}
+		]
+	}
+
+	def protected updateChildPanelMargin() {
+		childPanel.element.style => [
+			if (horizontal) {
+				setMarginLeft(currentMargin, PX)
+			} else {
+				setMarginTop(currentMargin, PX)
+			}
+		]
+	}
 }
