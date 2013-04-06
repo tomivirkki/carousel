@@ -12,17 +12,17 @@ import com.vaadin.shared.communication.ClientRpc
 import com.vaadin.shared.communication.ServerRpc
 import com.vaadin.shared.ui.Connect
 import org.vaadin.virkki.carousel.HorizontalCarousel
-import org.vaadin.virkki.carousel.client.widget.gwt.CarouselWidget
 import org.vaadin.virkki.carousel.client.widget.gwt.CarouselWidgetListener
+import org.vaadin.virkki.carousel.client.widget.gwt.HorizontalCarouselWidget
 
 @SuppressWarnings("serial")
 @Connect(typeof(HorizontalCarousel))
 class CarouselConnector extends AbstractComponentContainerConnector {
 
 	override protected createWidget() {
-		GWT::create(typeof(CarouselWidget)) => [
+		GWT::create(typeof(HorizontalCarouselWidget)) => [
 			val rpc = RpcProxy::create(typeof(CarouselServerRpc), this)
-			(it as CarouselWidget).addListener(rpc)
+			(it as HorizontalCarouselWidget).addListener(rpc)
 		]
 	}
 
@@ -41,8 +41,8 @@ class CarouselConnector extends AbstractComponentContainerConnector {
 		super.getState() as CarouselState
 	}
 
-	override CarouselWidget getWidget() {
-		super.widget as CarouselWidget
+	override HorizontalCarouselWidget getWidget() {
+		super.widget as HorizontalCarouselWidget
 	}
 
 	override onStateChanged(StateChangeEvent stateChangeEvent) {
