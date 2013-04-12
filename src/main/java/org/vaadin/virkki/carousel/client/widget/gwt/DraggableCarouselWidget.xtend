@@ -38,29 +38,31 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 	}
 
 	def private onDragStart(int position) {
-		val elem = childPanel.element
-		panelStartPosition = if(horizontal) elem.absoluteLeft else elem.absoluteTop
-		startPosition = position
-		runTimer.cancel
-		anim.cancel
-		moveHandler?.removeHandler
-		moveHandler = Event::addNativePreviewHandler[
-			switch Event::getTypeInt(nativeEvent.type) {
-				case Event::ONMOUSEMOVE:
-					onDragMove(if(horizontal) nativeEvent.screenX else nativeEvent.screenY)
-				case Event::ONTOUCHMOVE:
-					onDragMove(if(horizontal) nativeEvent.touches.get(0).screenX else nativeEvent.touches.get(0).screenY)
-				case Event::ONMOUSEUP:
-					onDragEnd()
-				case Event::ONTOUCHEND:
-					onDragEnd()
-			}
-			nativeEvent.stopPropagation
-			nativeEvent.preventDefault
-		]
-
-		onDragMove(position)
-		tailPosition = position
+		if (widgets.size > 1){
+			val elem = childPanel.element
+			panelStartPosition = if(horizontal) elem.absoluteLeft else elem.absoluteTop
+			startPosition = position
+			runTimer.cancel
+			anim.cancel
+			moveHandler?.removeHandler
+			moveHandler = Event::addNativePreviewHandler[
+				switch Event::getTypeInt(nativeEvent.type) {
+					case Event::ONMOUSEMOVE:
+						onDragMove(if(horizontal) nativeEvent.screenX else nativeEvent.screenY)
+					case Event::ONTOUCHMOVE:
+						onDragMove(if(horizontal) nativeEvent.touches.get(0).screenX else nativeEvent.touches.get(0).screenY)
+					case Event::ONMOUSEUP:
+						onDragEnd()
+					case Event::ONTOUCHEND:
+						onDragEnd()
+				}
+				nativeEvent.stopPropagation
+				nativeEvent.preventDefault
+			]
+	
+			onDragMove(position)
+			tailPosition = position
+		}
 	}
 
 	def private onDragMove(int position) {

@@ -75,25 +75,27 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	}
 
 	override protected scrollToPanelIndex(int _index) {
-		index = _index
-
-		updatePaddings
-
-		addStyleName(STYLE_TRANSITIONED)
-
-		animStartPosition = if (horizontal) {
-			childPanel.element.absoluteLeft - currentMargin - element.offsetLeft
-		} else {
-			childPanel.element.absoluteTop - currentMargin - element.offsetTop
+		if (widgets.size > 1){
+			index = _index
+	
+			updatePaddings
+	
+			addStyleName(STYLE_TRANSITIONED)
+	
+			animStartPosition = if (horizontal) {
+				childPanel.element.absoluteLeft - currentMargin - element.offsetLeft
+			} else {
+				childPanel.element.absoluteTop - currentMargin - element.offsetTop
+			}
+	
+			animTargetPosition = index * -measure - currentMargin
+			if (!animationFallback) {
+				setChildPanelPosition(animTargetPosition)
+			}
+	
+			anim.run(transitionDuration)
+			runTimer.schedule(transitionDuration)
 		}
-
-		animTargetPosition = index * -measure - currentMargin
-		if (!animationFallback) {
-			setChildPanelPosition(animTargetPosition)
-		}
-
-		anim.run(transitionDuration)
-		runTimer.schedule(transitionDuration)
 	}
 
 	def private updatePaddings() {
