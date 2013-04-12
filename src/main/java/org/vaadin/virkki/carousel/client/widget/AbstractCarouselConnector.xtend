@@ -47,6 +47,7 @@ abstract class AbstractCarouselConnector extends AbstractComponentContainerConne
 		widget.buttonsVisible = state.buttonsVisible
 		widget.transitionDuration = state.transitionDuration
 		widget.swipeSensitivity = state.swipeSensitivity
+		widget.wheelSensitivity = state.wheelSensitivity
 		widget.animationFallback = BrowserInfo::get.IE8 || BrowserInfo::get.IE9
 	}
 

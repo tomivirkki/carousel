@@ -36,6 +36,7 @@ abstract class CarouselWidgetBase extends FocusPanel {
 	val nextButton = getCarouselButton(false)
 
 	@Property CarouselLoadMode loadMode
+	@Property int wheelSensitivity
 	HandlerRegistration arrowKeysHandler
 	HandlerRegistration mouseWheelHandler
 
@@ -73,7 +74,7 @@ abstract class CarouselWidgetBase extends FocusPanel {
 		mouseWheelHandler = if (enabled)
 			childPanel.addDomHandler(
 				[
-					scroll(deltaY)
+					scroll((deltaY as double * wheelSensitivity / 20.0) as int)
 					preventDefault
 				], MouseWheelEvent::type)
 	}
