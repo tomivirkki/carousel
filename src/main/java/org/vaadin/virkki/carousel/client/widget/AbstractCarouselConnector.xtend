@@ -24,8 +24,8 @@ abstract class AbstractCarouselConnector extends AbstractComponentContainerConne
 	override init() {
 		super.init
 		layoutManager.addElementResizeListener(widget.element, listener)
-		registerRpc(typeof(CarouselClientScrollRpc))[widget.scroll(it)]
-		registerRpc(typeof(CarouselClientScrollToRpc))[widget.scrollTo(it)]
+		typeof(CarouselClientScrollRpc).registerRpc[widget.scroll(it)]
+		typeof(CarouselClientScrollToRpc).registerRpc[widget.scrollTo(it)]
 	}
 
 	override CarouselState getState() {

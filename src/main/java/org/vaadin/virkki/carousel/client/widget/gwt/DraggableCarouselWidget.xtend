@@ -6,8 +6,6 @@ import com.google.gwt.event.shared.HandlerRegistration
 import com.google.gwt.user.client.Event
 import com.google.gwt.user.client.Timer
 
-import static com.google.gwt.dom.client.Style$Unit.*
-
 abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 
 	int lastPosition
@@ -38,7 +36,7 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 	}
 
 	def private onDragStart(int position) {
-		if (widgets.size > 1){
+		if (widgets.size > 1) {
 			val elem = childPanel.element
 			panelStartPosition = if(horizontal) elem.absoluteLeft else elem.absoluteTop
 			startPosition = position
@@ -49,8 +47,10 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 				switch Event::getTypeInt(nativeEvent.type) {
 					case Event::ONMOUSEMOVE:
 						onDragMove(if(horizontal) nativeEvent.screenX else nativeEvent.screenY)
-					case Event::ONTOUCHMOVE:
-						onDragMove(if(horizontal) nativeEvent.touches.get(0).screenX else nativeEvent.touches.get(0).screenY)
+					case Event::ONTOUCHMOVE: {
+						val touch = nativeEvent.touches.get(0)
+						onDragMove(if(horizontal) touch.screenX else touch.screenY)
+					}
 					case Event::ONMOUSEUP:
 						onDragEnd()
 					case Event::ONTOUCHEND:
@@ -59,7 +59,7 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 				nativeEvent.stopPropagation
 				nativeEvent.preventDefault
 			]
-	
+
 			onDragMove(position)
 			tailPosition = position
 		}

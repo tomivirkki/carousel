@@ -25,7 +25,7 @@ abstract class CarouselWidgetBase extends FocusPanel {
 
 	protected List<Widget> widgets = newArrayList
 	val protected List<CarouselWidgetListener> listeners = newArrayList
-	
+
 	val protected childPanel = createChildPanel => [styleName = STYLE_CHILD_PANEL]
 
 	protected int index
@@ -42,7 +42,7 @@ abstract class CarouselWidgetBase extends FocusPanel {
 
 	new() {
 		styleName = STYLE_NAME
-		
+
 		widget = new FlowPanel => [
 			styleName = STYLE_CAROUSEL_PANEL
 			add(new SimplePanel(childPanel) => [styleName = STYLE_CHILD_PANEL_WRAPPER])
@@ -81,22 +81,22 @@ abstract class CarouselWidgetBase extends FocusPanel {
 
 	def setArrowKeysMode(ArrowKeysMode arrowKeysMode) {
 		arrowKeysHandler?.removeHandler
-		arrowKeysHandler = if (arrowKeysMode != null && arrowKeysMode != ArrowKeysMode::DISABLED) {
+		arrowKeysHandler = if (arrowKeysMode ?: arrowKeysMode != ArrowKeysMode::DISABLED) {
 			arrowKeysHandler = Event::addNativePreviewHandler [
 				if (Event::getTypeInt(nativeEvent.type) == Event::ONKEYDOWN &&
 					(arrowKeysMode == ArrowKeysMode::ALWAYS || hasFocus)) {
 					switch (nativeEvent.keyCode) {
-						case KeyCodes::KEY_RIGHT: if (horizontal) scroll(1)
-						case KeyCodes::KEY_LEFT: if (horizontal) scroll(-1)
-						case KeyCodes::KEY_DOWN: if (!horizontal) scroll(1)
-						case KeyCodes::KEY_UP: if (!horizontal) scroll(-1)
+						case KeyCodes::KEY_RIGHT: if(horizontal) scroll(1)
+						case KeyCodes::KEY_LEFT: if(horizontal) scroll(-1)
+						case KeyCodes::KEY_DOWN: if(!horizontal) scroll(1)
+						case KeyCodes::KEY_UP: if(!horizontal) scroll(-1)
 					}
 				}]
 		}
 	}
 
 	def addListener(CarouselWidgetListener listener) {
-		listeners.add(listener)
+		listeners += listener
 	}
 
 	def void setWidgets(List<Widget> _widgets)
@@ -118,14 +118,13 @@ abstract class CarouselWidgetBase extends FocusPanel {
 	}
 
 	def scrollTo(Widget widget) {
-		val wrapper = widget.parent
-		if (wrapper != null) {
-			scrollToPanelIndex(childPanel.getWidgetIndex(wrapper))
-		}
+		widget.parent => [
+			if(it != null) scrollToPanelIndex(childPanel.getWidgetIndex(it))
+		]
 	}
 
 	def protected void scrollToPanelIndex(int _index)
-	
+
 	def protected boolean isHorizontal() {
 		childPanel.class == typeof(HorizontalPanel)
 	}

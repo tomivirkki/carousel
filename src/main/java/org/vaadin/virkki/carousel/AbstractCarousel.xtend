@@ -35,7 +35,7 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 	 * Add a new component to the Carousel
 	 */
 	override addComponent(Component c) {
-		components.add(c)
+		components += c
 		ensureConnectorsList
 	}
 
@@ -43,7 +43,7 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 	 * Removes a Component from the Carousel
 	 */
 	override removeComponent(Component c) {
-		components.remove(c)
+		components -= c
 		super.removeComponent(c)
 		ensureConnectorsList
 	}
@@ -75,7 +75,7 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
      *            specifies the direction and the number of steps to take 
 	 */
 	def scroll(int change) {
-		getRpcProxy(typeof(CarouselClientScrollRpc)).scroll(change)
+		typeof(CarouselClientScrollRpc).rpcProxy.scroll(change)
 	}
 
 	/**
@@ -87,7 +87,7 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 	def scrollTo(Component component) {
 		val index = components.indexOf(component)
 		if (index > -1) {
-			getRpcProxy(typeof(CarouselClientScrollToRpc)).scrollTo(index)
+			typeof(CarouselClientScrollToRpc).rpcProxy.scrollTo(index)
 		}
 	}
 
@@ -180,11 +180,11 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 	 * Add a Component select listener.
 	 */
 	def addComponentSelectListener(ComponentSelectListener listener) {
-		listeners.add(listener)
+		listeners += listener
 	}
 
 	def removeComponentSelectListener(ComponentSelectListener listener) {
-		listeners.remove(listener)
+		listeners -= listener
 	}
 
 	override widgetSelected(int selectedIndex) {
@@ -206,12 +206,12 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 
 		//Ensure connectors list is not longer than components
 		while (components.size < state.connectors.size) {
-			state.connectors.remove(state.connectors.last)
+			state.connectors -= state.connectors.last
 		}
 
 		//Ensure connectors list contains no anomalies
 		for (i : 0 ..< components.size) {
-			if (state.connectors.get(i) != null && state.connectors.get(i) != components.get(i)) {
+			if (state.connectors.get(i) ?: state.connectors.get(i) != components.get(i)) {
 				state.connectors.set(i, null)
 			}
 		}
@@ -231,7 +231,7 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 		ensureConnectorsList
 
 		//Ensure that the selected component is added
-		if (selectedIndex >= 0 && state.connectors.get(selectedIndex) == null) {
+		if (selectedIndex >= 0) {
 			add(components.get(selectedIndex))
 		}
 
@@ -248,12 +248,6 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 	}
 
 	override beforeClientResponse(boolean initial) {
-
-		//TODO: Re-enable
-		//					if (initial){
-		//						requestWidgets(0)	
-		//					}
-		//TODO: Remove
 		ensureConnectorsList
 		super.beforeClientResponse(initial)
 	}
