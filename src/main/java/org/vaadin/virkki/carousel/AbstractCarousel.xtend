@@ -206,13 +206,17 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 
 		//Ensure connectors list is not longer than components
 		while (components.size < state.connectors.size) {
-			state.connectors -= state.connectors.last
+			val connector = state.connectors.last
+			state.connectors -= connector
+			remove(connector as Component);
 		}
 
 		//Ensure connectors list contains no anomalies
 		for (i : 0 ..< components.size) {
-			if (state.connectors.get(i) ?: state.connectors.get(i) != components.get(i)) {
+			val connector = state.connectors.get(i)
+			if (connector != null && connector != components.get(i)) {
 				state.connectors.set(i, null)
+				remove(connector as Component);
 			}
 		}
 	}
@@ -224,6 +228,12 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 			if (component.parent != this) {
 				super.addComponent(component)
 			}
+		}
+	}
+
+	def private remove(Component component) {
+		if (component?.parent == this) {
+			super.removeComponent(component)
 		}
 	}
 

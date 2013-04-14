@@ -5,8 +5,8 @@ import com.google.gwt.event.dom.client.MouseDownEvent
 import com.google.gwt.event.dom.client.TouchStartEvent
 import com.google.gwt.user.client.Timer
 import com.google.gwt.user.client.ui.HorizontalPanel
-import com.google.gwt.user.client.ui.VerticalPanel
 import com.google.gwt.user.client.ui.SimplePanel
+import com.google.gwt.user.client.ui.VerticalPanel
 import com.google.gwt.user.client.ui.Widget
 import java.util.List
 
@@ -21,7 +21,6 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	val protected Timer runTimer = [|onAnimationEnd]
 
 	int prependedChildren
-	int repositionTreshold
 
 	int width = 1
 	int height = 1
@@ -34,30 +33,34 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	int transitionDuration = 1000
 
 	override setWidgets(List<Widget> _widgets) {
-		val currentWidget = if(childPanel.widgetCount > index) getWrapper(index)
-		val currentWidgetIndex = if(currentWidget != null) widgets.indexOf(currentWidget.widget) else 0
+		if (!_widgets.isEmpty) {
+			val currentWidget = if(childPanel.widgetCount > index) getWrapper(index)
+			var currentWidgetIndex = if(currentWidget != null) widgets.indexOf(currentWidget.widget) else 0
+			currentWidgetIndex = Math::max(currentWidgetIndex, 0)
+			currentWidgetIndex = Math::min(currentWidgetIndex, _widgets.size-1)
+			
+			widgets = newArrayList
+			for (w : _widgets) {
+				widgets += w ?: new PlaceHolder
+			}
 
-		widgets = newArrayList
-		for (w : _widgets) {
-			widgets.add(if(w == null) new PlaceHolder else w)
+			updatePaddings
+
+			for (i : 0 ..< widgets.size) {
+				getWrapper(index + i - currentWidgetIndex).widget = widgets.get(i)
+			}
+
+			if (_widgets.contains(null) && loadMode == CarouselLoadMode::SMART) {
+				listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
+			}
+
+			//TODO: See Carousel.java. This is a temporary workaround
+			if (selectedWidget.class == typeof(PlaceHolder)) {
+				listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
+			}
+
+			onUpdate(0)
 		}
-
-		updatePaddings
-
-		for (i : 0 ..< widgets.size) {
-			getWrapper(index + i - currentWidgetIndex).widget = widgets.get(i)
-		}
-
-		if (_widgets.contains(null) && loadMode == CarouselLoadMode::SMART) {
-			listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
-		}
-
-		//TODO: See Carousel.java. This is a temporary workaround
-		if (selectedWidget.class == typeof(PlaceHolder)) {
-			listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
-		}
-
-		onUpdate(0)
 	}
 
 	def private wrap(Widget widget) {
@@ -75,24 +78,24 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	}
 
 	override protected scrollToPanelIndex(int _index) {
-		if (widgets.size > 1){
+		if (widgets.size > 1) {
 			index = _index
-	
+
 			updatePaddings
-	
+
 			addStyleName(STYLE_TRANSITIONED)
-	
+
 			animStartPosition = if (horizontal) {
 				childPanel.element.absoluteLeft - currentMargin - element.offsetLeft
 			} else {
 				childPanel.element.absoluteTop - currentMargin - element.offsetTop
 			}
-	
+
 			animTargetPosition = index * -measure - currentMargin
 			if (!animationFallback) {
 				setChildPanelPosition(animTargetPosition)
 			}
-	
+
 			anim.run(transitionDuration)
 			runTimer.schedule(transitionDuration)
 		}
@@ -130,18 +133,20 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	}
 
 	def private onUpdate(double progress) {
-		if (animationFallback && progress < 1.0) {
-			val newPosition = animTargetPosition - (animTargetPosition - animStartPosition) * (1.0 - progress)
-			setChildPanelPosition(newPosition)
-		}
+		if (widgets.size > 1) {
+			if (animationFallback && progress < 1.0) {
+				val newPosition = animTargetPosition - (animTargetPosition - animStartPosition) * (1.0 - progress)
+				setChildPanelPosition(newPosition)
+			}
 
-		for (w : widgets) {
-			val wrapper = w.parent as SimplePanel
-			val wrapperPosition = if(horizontal) wrapper.element.absoluteLeft else wrapper.element.absoluteTop
-			if (Math::abs(wrapperPosition) > repositionTreshold) {
-				val newIndex = childPanel.getWidgetIndex(wrapper) -
-					widgets.size * Math::signum(wrapperPosition) as int
-				getWrapper(newIndex).widget = wrapper?.widget
+			for (w : widgets) {
+				val wrapper = w.parent as SimplePanel
+				val wrapperPosition = if(horizontal) wrapper.element.absoluteLeft else wrapper.element.absoluteTop
+				if (Math::abs(wrapperPosition) > repositionTreshold) {
+					val newIndex = childPanel.getWidgetIndex(wrapper) -
+						widgets.size * Math::signum(wrapperPosition) as int
+					getWrapper(newIndex).widget = wrapper?.widget
+				}
 			}
 		}
 	}
@@ -170,10 +175,13 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 		setChildPanelPosition(index * -measure - currentMargin)
 		updateChildPanelMargin
 
-		repositionTreshold = widgets.size / 2 * measure
 		onUpdate(0)
 
 		addStyleName(STYLE_TRANSITIONED)
+	}
+
+	def getRepositionTreshold() {
+		widgets.size / 2 * measure
 	}
 
 	def setTransitionDuration(int duration) {
