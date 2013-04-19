@@ -17,7 +17,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	val public static STYLE_TRANSITIONED = "transitioned"
 	val static STYLE_CHILD_WRAPPER = "childwrapper"
 
-	val protected Animation anim = [onUpdate]
+	val protected EaseOutAnimation anim = [onUpdate]
 	val protected Timer runTimer = [|onAnimationEnd]
 
 	int prependedChildren
@@ -37,8 +37,8 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 			val currentWidget = if(childPanel.widgetCount > index) getWrapper(index)
 			var currentWidgetIndex = if(currentWidget != null) widgets.indexOf(currentWidget.widget) else 0
 			currentWidgetIndex = Math::max(currentWidgetIndex, 0)
-			currentWidgetIndex = Math::min(currentWidgetIndex, _widgets.size-1)
-			
+			currentWidgetIndex = Math::min(currentWidgetIndex, _widgets.size - 1)
+
 			widgets = newArrayList
 			for (w : _widgets) {
 				widgets += w ?: new PlaceHolder
@@ -134,7 +134,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
 	def private onUpdate(double progress) {
 		if (widgets.size > 1) {
-			if (animationFallback && progress < 1.0) {
+			if (animationFallback) {
 				val newPosition = animTargetPosition - (animTargetPosition - animStartPosition) * (1.0 - progress)
 				setChildPanelPosition(newPosition)
 			}
@@ -152,9 +152,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	}
 
 	def protected onAnimationEnd() {
-		if (!animationFallback) {
-			setChildPanelPosition(animTargetPosition)
-		}
+		setChildPanelPosition(animTargetPosition)
 
 		if (widgets.exists[class == typeof(PlaceHolder)] &&
 			(loadMode == CarouselLoadMode::SMART || selectedWidget.class == typeof(PlaceHolder))) {
@@ -217,5 +215,11 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 				setMarginTop(currentMargin, PX)
 			}
 		]
+	}
+}
+
+abstract class EaseOutAnimation extends Animation {
+	override protected interpolate(double progress) {
+		if(progress < 0.5) progress else super.interpolate(progress)
 	}
 }
