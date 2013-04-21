@@ -125,8 +125,6 @@ abstract class CarouselWidgetBase extends FocusPanel {
 
 	def protected void scrollToPanelIndex(int _index)
 
-	def protected boolean isHorizontal() {
-		childPanel.class == typeof(HorizontalPanel)
-	}
+	def protected boolean isHorizontal()
 
 }

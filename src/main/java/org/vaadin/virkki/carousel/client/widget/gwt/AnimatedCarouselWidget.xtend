@@ -9,8 +9,7 @@ import com.google.gwt.user.client.ui.SimplePanel
 import com.google.gwt.user.client.ui.VerticalPanel
 import com.google.gwt.user.client.ui.Widget
 import java.util.List
-
-import static com.google.gwt.dom.client.Style$Unit.*
+import com.google.gwt.user.client.Window
 
 abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
@@ -22,8 +21,8 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
 	int prependedChildren
 
-	int width = 1
-	int height = 1
+	protected int width = 1
+	protected int height = 1
 
 	@Property boolean animationFallback
 	int animTargetPosition
@@ -139,9 +138,11 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 				setChildPanelPosition(newPosition)
 			}
 
+			val repositionTreshold = widgets.size / 2 * measure
+
 			for (w : widgets) {
 				val wrapper = w.parent as SimplePanel
-				val wrapperPosition = if(horizontal) wrapper.element.absoluteLeft else wrapper.element.absoluteTop
+				var wrapperPosition = getPositionRelativeToCarousel(wrapper)
 				if (Math::abs(wrapperPosition) > repositionTreshold) {
 					val newIndex = childPanel.getWidgetIndex(wrapper) -
 						widgets.size * Math::signum(wrapperPosition) as int
@@ -178,10 +179,6 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 		addStyleName(STYLE_TRANSITIONED)
 	}
 
-	def getRepositionTreshold() {
-		widgets.size / 2 * measure
-	}
-
 	def setTransitionDuration(int duration) {
 		transitionDuration = duration
 		val style = childPanel.element.style
@@ -193,29 +190,13 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 		}
 	}
 
-	def protected int getMeasure() {
-		if(horizontal) width else height
-	}
+	def protected int getPositionRelativeToCarousel(Widget widget)
 
-	def protected setChildPanelPosition(double position) {
-		childPanel.element.style => [
-			if (horizontal) {
-				setLeft(position, PX)
-			} else {
-				setTop(position, PX)
-			}
-		]
-	}
+	def protected int getMeasure()
 
-	def protected updateChildPanelMargin() {
-		childPanel.element.style => [
-			if (horizontal) {
-				setMarginLeft(currentMargin, PX)
-			} else {
-				setMarginTop(currentMargin, PX)
-			}
-		]
-	}
+	def protected void setChildPanelPosition(double position)
+
+	def protected void updateChildPanelMargin()
 }
 
 abstract class EaseOutAnimation extends Animation {
