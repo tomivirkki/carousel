@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.VerticalPanel
 import com.google.gwt.user.client.ui.Widget
 import java.util.List
 import com.google.gwt.user.client.Window
+import com.google.gwt.core.client.Scheduler
 
 abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
@@ -30,6 +31,9 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
 	@Property CarouselLoadMode loadMode
 	int transitionDuration = 1000
+
+	double scheduledTargetPosition;
+	boolean childPanelPositionSchedulerActive = false;
 
 	override setWidgets(List<Widget> _widgets) {
 		if (!_widgets.isEmpty) {
@@ -92,11 +96,21 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
 			animTargetPosition = index * -measure - currentMargin
 			if (!animationFallback) {
-				setChildPanelPosition(animTargetPosition)
+				scheduleSetChildPanelPosition(animTargetPosition)
 			}
 
 			anim.run(transitionDuration)
 			runTimer.schedule(transitionDuration)
+		}
+	}
+
+	def private scheduleSetChildPanelPosition(double targetPosition) {
+		scheduledTargetPosition = targetPosition;
+		if (!childPanelPositionSchedulerActive) {
+			Scheduler::get().scheduleDeferred([ |
+				setChildPanelPosition(scheduledTargetPosition)
+				childPanelPositionSchedulerActive = false;
+			])
 		}
 	}
 
@@ -171,7 +185,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
 		childPanel.forEach[setPixelSize(width, height)]
 
-		setChildPanelPosition(index * -measure - currentMargin)
+		scheduleSetChildPanelPosition(index * -measure - currentMargin)
 		updateChildPanelMargin
 
 		onUpdate(0)
