@@ -9,7 +9,6 @@ import com.vaadin.client.ui.AbstractComponentContainerConnector
 import com.vaadin.client.ui.layout.ElementResizeListener
 import com.vaadin.shared.communication.ClientRpc
 import com.vaadin.shared.communication.ServerRpc
-import org.vaadin.virkki.carousel.client.widget.gwt.CarouselWidgetBase
 import org.vaadin.virkki.carousel.client.widget.gwt.CarouselWidgetListener
 import org.vaadin.virkki.carousel.client.widget.gwt.DraggableCarouselWidget
 
@@ -39,7 +38,7 @@ abstract class AbstractCarouselConnector extends AbstractComponentContainerConne
 	override onStateChanged(StateChangeEvent stateChangeEvent) {
 		super.onStateChanged(stateChangeEvent)
 		widget.loadMode = state.loadMode
-		widget.widgets = state.connectors.map[if(it != null) (it as ComponentConnector).widget]
+		widget.widgets = state.connectors.map[(it as ComponentConnector)?.widget]
 		widget.arrowKeysMode = state.arrowKeysMode
 		widget.mouseDragEnabled = state.mouseDragEnabled
 		widget.touchDragEnabled = state.touchDragEnabled

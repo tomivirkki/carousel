@@ -89,7 +89,6 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 		}
 
 		moveHandler?.removeHandler
-		moveHandler = null
 	}
 
 }

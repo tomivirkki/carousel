@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.SimplePanel
 import com.google.gwt.user.client.ui.VerticalPanel
 import com.google.gwt.user.client.ui.Widget
 import java.util.List
-import com.google.gwt.user.client.Window
 
 abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
