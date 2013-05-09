@@ -1,6 +1,7 @@
 package org.vaadin.virkki.carousel.client.widget.gwt
 
 import com.google.gwt.animation.client.Animation
+import com.google.gwt.core.client.Scheduler
 import com.google.gwt.event.dom.client.MouseDownEvent
 import com.google.gwt.event.dom.client.TouchStartEvent
 import com.google.gwt.user.client.Timer
@@ -76,27 +77,30 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	}
 
 	override protected scrollToPanelIndex(int _index) {
-		if (widgets.size > 1) {
-			index = _index
+		Scheduler::get().scheduleDeferred(
+			[ |
+				if (widgets.size > 1) {
+					index = _index
 
-			updatePaddings
+					updatePaddings
 
-			addStyleName(STYLE_TRANSITIONED)
+					addStyleName(STYLE_TRANSITIONED)
 
-			animStartPosition = if (horizontal) {
-				childPanel.element.absoluteLeft - currentMargin - element.offsetLeft
-			} else {
-				childPanel.element.absoluteTop - currentMargin - element.offsetTop
-			}
+					animStartPosition = if (horizontal) {
+						childPanel.element.absoluteLeft - currentMargin - element.offsetLeft
+					} else {
+						childPanel.element.absoluteTop - currentMargin - element.offsetTop
+					}
 
-			animTargetPosition = index * -measure - currentMargin
-			if (!animationFallback) {
-				setChildPanelPosition(animTargetPosition)
-			}
+					animTargetPosition = index * -measure - currentMargin
+					if (!animationFallback) {
+						setChildPanelPosition(animTargetPosition)
+					}
 
-			anim.run(transitionDuration)
-			runTimer.schedule(transitionDuration)
-		}
+					anim.run(transitionDuration)
+					runTimer.schedule(transitionDuration)
+				}
+			])
 	}
 
 	def private updatePaddings() {
