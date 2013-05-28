@@ -8,10 +8,10 @@ import com.google.gwt.user.client.ui.Button
 import com.google.gwt.user.client.ui.CellPanel
 import com.google.gwt.user.client.ui.FlowPanel
 import com.google.gwt.user.client.ui.FocusPanel
-import com.google.gwt.user.client.ui.HorizontalPanel
 import com.google.gwt.user.client.ui.SimplePanel
 import com.google.gwt.user.client.ui.Widget
 import java.util.List
+import com.google.gwt.user.client.Window
 
 abstract class CarouselWidgetBase extends FocusPanel {
 
@@ -36,7 +36,6 @@ abstract class CarouselWidgetBase extends FocusPanel {
 	val nextButton = getCarouselButton(false)
 
 	@Property CarouselLoadMode loadMode
-	@Property int wheelSensitivity
 	HandlerRegistration arrowKeysHandler
 	HandlerRegistration mouseWheelHandler
 
@@ -74,7 +73,7 @@ abstract class CarouselWidgetBase extends FocusPanel {
 		mouseWheelHandler = if (enabled)
 			childPanel.addDomHandler(
 				[
-					scroll((deltaY as double * wheelSensitivity / 20.0) as int)
+					scroll(Math::min(5, Math::max(-5, deltaY)))
 					preventDefault
 				], MouseWheelEvent::type)
 	}

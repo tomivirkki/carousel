@@ -25,6 +25,4 @@ class CarouselState extends AbstractComponentState {
 	@Property int transitionDuration = 1000
 
 	@Property int swipeSensitivity = 20
-	
-	@Property int wheelSensitivity = 20
 }
