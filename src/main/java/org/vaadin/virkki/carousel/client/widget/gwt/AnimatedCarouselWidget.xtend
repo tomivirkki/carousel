@@ -49,12 +49,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 				getWrapper(index + i - currentWidgetIndex).widget = widgets.get(i)
 			}
 
-			if (_widgets.contains(null) && loadMode == CarouselLoadMode::SMART) {
-				listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
-			}
-
-			//TODO: See Carousel.java. This is a temporary workaround
-			if (selectedWidget.class == PlaceHolder) {
+			if (_widgets.contains(null)) {
 				listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
 			}
 
