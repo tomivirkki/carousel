@@ -54,7 +54,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 			}
 
 			//TODO: See Carousel.java. This is a temporary workaround
-			if (selectedWidget.class == typeof(PlaceHolder)) {
+			if (selectedWidget.class == PlaceHolder) {
 				listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
 			}
 
@@ -158,8 +158,8 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	def protected onAnimationEnd() {
 		setChildPanelPosition(animTargetPosition)
 
-		if (widgets.exists[class == typeof(PlaceHolder)] &&
-			(loadMode == CarouselLoadMode::SMART || selectedWidget.class == typeof(PlaceHolder))) {
+		if (widgets.exists[class == PlaceHolder] &&
+			(loadMode == CarouselLoadMode::SMART || selectedWidget.class == PlaceHolder)) {
 			listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
 		}
 		listeners.forEach[widgetSelected(widgets.indexOf(selectedWidget))]
@@ -188,7 +188,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 		val value = duration + "ms"
 		val propertyName = "transitionDuration"
 		style.setProperty(propertyName, value)
-		for (browserPrefix : newArrayList("webkit", "Moz", "ms", "O")) {
+		for (browserPrefix : #["webkit", "Moz", "ms", "O"]) {
 			style.setProperty(browserPrefix + propertyName.toFirstUpper, value)
 		}
 	}

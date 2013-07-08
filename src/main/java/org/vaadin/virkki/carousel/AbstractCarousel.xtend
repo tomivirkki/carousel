@@ -65,7 +65,7 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 	}
 
 	def private getAddedComponents() {
-		state.connectors.filter(typeof(Component))
+		state.connectors.filter(Component)
 	}
 
 	/**
@@ -75,7 +75,7 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
      *            specifies the direction and the number of steps to take 
 	 */
 	def scroll(int change) {
-		typeof(CarouselClientScrollRpc).rpcProxy.scroll(change)
+		CarouselClientScrollRpc.rpcProxy.scroll(change)
 	}
 
 	/**
@@ -87,7 +87,7 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 	def scrollTo(Component component) {
 		val index = components.indexOf(component)
 		if (index > -1) {
-			typeof(CarouselClientScrollToRpc).rpcProxy.scrollTo(index)
+			CarouselClientScrollToRpc.rpcProxy.scrollTo(index)
 		}
 	}
 
@@ -251,8 +251,8 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 			}
 			case CarouselLoadMode::SMART: {
 				val notAdded = [!state.connectors.contains(it)]
-				components.findFirst(notAdded) => [add]
-				components.findLast(notAdded) => [add]
+				components.findFirst(notAdded).add
+				components.findLast(notAdded).add
 			}
 		}
 	}

@@ -7,11 +7,11 @@ import org.vaadin.virkki.carousel.client.widget.gwt.CarouselWidgetBase
 import org.vaadin.virkki.carousel.client.widget.gwt.VerticalCarouselWidget
 
 @SuppressWarnings("serial")
-@Connect(typeof(VerticalCarousel))
+@Connect(VerticalCarousel)
 class VerticalCarouselConnector extends AbstractCarouselConnector {
 
 	override protected createWidget() {
-		GWT::create(typeof(VerticalCarouselWidget)) => [
+		GWT::create(VerticalCarouselWidget) => [
 			(it as CarouselWidgetBase).addListener(rpc)
 		]
 	}

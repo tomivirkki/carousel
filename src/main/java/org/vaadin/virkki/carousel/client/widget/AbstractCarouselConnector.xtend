@@ -14,7 +14,7 @@ import org.vaadin.virkki.carousel.client.widget.gwt.DraggableCarouselWidget
 
 @SuppressWarnings("serial")
 abstract class AbstractCarouselConnector extends AbstractComponentContainerConnector {
-	val protected rpc = RpcProxy::create(typeof(CarouselServerRpc), this)
+	val protected rpc = RpcProxy::create(CarouselServerRpc, this)
 
 	val ElementResizeListener listener = [
 		widget.setCarouselSize(layoutManager.getInnerWidth(element), layoutManager.getInnerHeight(element))
@@ -23,8 +23,8 @@ abstract class AbstractCarouselConnector extends AbstractComponentContainerConne
 	override init() {
 		super.init
 		layoutManager.addElementResizeListener(widget.element, listener)
-		typeof(CarouselClientScrollRpc).registerRpc[widget.scroll(it)]
-		typeof(CarouselClientScrollToRpc).registerRpc[widget.scrollTo(it)]
+		CarouselClientScrollRpc.registerRpc[widget.scroll(it)]
+		CarouselClientScrollToRpc.registerRpc[widget.scrollTo(it)]
 	}
 
 	override CarouselState getState() {
