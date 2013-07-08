@@ -37,13 +37,12 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 
 	def private onDragStart(int position) {
 		if (widgets.size > 1) {
-			val elem = childPanel.element
-			panelStartPosition = if(horizontal) elem.absoluteLeft else elem.absoluteTop
+			panelStartPosition = childPanelCurrentPosition
 			startPosition = position
 			runTimer.cancel
 			anim.cancel
 			moveHandler?.removeHandler
-			moveHandler = Event::addNativePreviewHandler[
+			moveHandler = Event::addNativePreviewHandler [
 				switch Event::getTypeInt(nativeEvent.type) {
 					case Event::ONMOUSEMOVE:
 						onDragMove(if(horizontal) nativeEvent.screenX else nativeEvent.screenY)
@@ -68,9 +67,7 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 	def private onDragMove(int position) {
 		removeStyleName(STYLE_TRANSITIONED)
 
-		val offset = if(horizontal) element.offsetLeft else element.offsetTop
-		val newPosition = panelStartPosition - startPosition + position - currentMargin - offset
-		setChildPanelPosition(newPosition)
+		setChildPanelPosition(panelStartPosition - startPosition + position)
 
 		lastPosition = position
 		val Timer timer = [|tailPosition = position]
@@ -89,6 +86,7 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 		}
 
 		moveHandler?.removeHandler
+		moveHandler = null
 	}
 
 }

@@ -37,4 +37,9 @@ class HorizontalCarouselWidget extends DraggableCarouselWidget {
 		widget.element.absoluteLeft - element.absoluteLeft
 	}
 
+	override protected getChildPanelCurrentPosition() {
+		childPanel.element.absoluteLeft - currentMargin - (
+			if(OPERA) 0 else element.offsetLeft
+		)
+	}
 }

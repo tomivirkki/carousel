@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.KeyCodes
 import com.google.gwt.event.dom.client.MouseWheelEvent
 import com.google.gwt.event.shared.HandlerRegistration
 import com.google.gwt.user.client.Event
+import com.google.gwt.user.client.Window
 import com.google.gwt.user.client.ui.Button
 import com.google.gwt.user.client.ui.CellPanel
 import com.google.gwt.user.client.ui.FlowPanel
@@ -11,7 +12,6 @@ import com.google.gwt.user.client.ui.FocusPanel
 import com.google.gwt.user.client.ui.SimplePanel
 import com.google.gwt.user.client.ui.Widget
 import java.util.List
-import com.google.gwt.user.client.Window
 
 abstract class CarouselWidgetBase extends FocusPanel {
 
@@ -27,6 +27,7 @@ abstract class CarouselWidgetBase extends FocusPanel {
 	val protected List<CarouselWidgetListener> listeners = newArrayList
 
 	val protected childPanel = createChildPanel => [styleName = STYLE_CHILD_PANEL]
+	val protected OPERA = Window.Navigator.userAgent.toLowerCase.contains("opera")
 
 	protected int index
 

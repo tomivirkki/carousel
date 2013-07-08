@@ -1,5 +1,6 @@
 package org.vaadin.virkki.carousel
 
+import com.vaadin.server.Sizeable
 import com.vaadin.ui.AbstractComponentContainer
 import com.vaadin.ui.Component
 import java.util.List
@@ -9,7 +10,6 @@ import org.vaadin.virkki.carousel.client.widget.CarouselServerRpc
 import org.vaadin.virkki.carousel.client.widget.CarouselState
 import org.vaadin.virkki.carousel.client.widget.gwt.ArrowKeysMode
 import org.vaadin.virkki.carousel.client.widget.gwt.CarouselLoadMode
-import com.vaadin.server.Sizeable
 
 abstract class AbstractCarousel extends AbstractComponentContainer implements CarouselServerRpc {
 
@@ -19,8 +19,8 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 
 	new() {
 		registerRpc(this)
-		setHeight(300.0f, Sizeable$Unit::PIXELS)
-		setWidth(300.0f, Sizeable$Unit::PIXELS)
+		setHeight(300.0f, Sizeable.Unit::PIXELS)
+		setWidth(300.0f, Sizeable.Unit::PIXELS)
 	}
 
 	override protected CarouselState getState() {
@@ -242,7 +242,7 @@ abstract class AbstractCarousel extends AbstractComponentContainer implements Ca
 
 		//Ensure that the selected component is added
 		if (selectedIndex >= 0) {
-			add(components.get(selectedIndex))
+			components.get(selectedIndex).add
 		}
 
 		switch state.loadMode {

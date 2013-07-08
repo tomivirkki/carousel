@@ -37,4 +37,10 @@ class VerticalCarouselWidget extends DraggableCarouselWidget {
 		widget.element.absoluteTop - element.absoluteTop
 	}
 	
+	override protected getChildPanelCurrentPosition() {
+		childPanel.element.absoluteTop - currentMargin - (
+			if(OPERA) 0 else element.offsetTop
+		)
+	}
+	
 }

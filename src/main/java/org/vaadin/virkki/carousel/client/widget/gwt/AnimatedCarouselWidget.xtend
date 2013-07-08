@@ -81,11 +81,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
 					addStyleName(STYLE_TRANSITIONED)
 
-					animStartPosition = if (horizontal) {
-						childPanel.element.absoluteLeft - currentMargin - element.offsetLeft
-					} else {
-						childPanel.element.absoluteTop - currentMargin - element.offsetTop
-					}
+					animStartPosition = childPanelCurrentPosition
 
 					animTargetPosition = index * -measure - currentMargin
 					if (!animationFallback) {
@@ -189,6 +185,8 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	}
 
 	def protected int getPositionRelativeToCarousel(Widget widget)
+	
+	def protected int getChildPanelCurrentPosition()
 
 	def protected int getMeasure()
 
