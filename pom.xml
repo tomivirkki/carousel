@@ -9,7 +9,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<vaadin.version>7.0.3</vaadin.version>
-		<xtend.version>2.4.2</xtend.version>
+		<xtend.version>2.4.3</xtend.version>
 		<widgetset.name>org.vaadin.virkki.carousel.CarouselWidgetSet</widgetset.name>
 	</properties>
 
