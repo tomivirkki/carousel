@@ -51,6 +51,7 @@
 	background: transparent;
 	border: none;
 	cursor: pointer;
+	outline: none;
 }
 .carousel.horizontalcarousel .carouselbutton {
 	height: 100%;
