@@ -90,6 +90,8 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 
 					anim.run(transitionDuration)
 					runTimer.schedule(transitionDuration)
+					tabKeyEnabled = false
+					unhideAllWidgets
 				}
 			])
 	}
@@ -149,12 +151,16 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	def protected onAnimationEnd() {
 		setChildPanelPosition(animTargetPosition)
 
+		val selectedIndex = widgets.indexOf(selectedWidget)
 		if (widgets.exists[class == PlaceHolder] &&
 			(loadMode == CarouselLoadMode::SMART || selectedWidget.class == PlaceHolder)) {
-			listeners.forEach[requestWidgets(widgets.indexOf(selectedWidget))]
+			listeners.forEach[requestWidgets(selectedIndex)]
 		}
-		listeners.forEach[widgetSelected(widgets.indexOf(selectedWidget))]
+		listeners.forEach[widgetSelected(selectedIndex)]
 		minimizePaddings
+		tabKeyEnabled = true
+
+		hideNonVisibleWidgets
 	}
 
 	def setCarouselSize(int width, int height) {
@@ -185,7 +191,7 @@ abstract class AnimatedCarouselWidget extends CarouselWidgetBase {
 	}
 
 	def protected int getPositionRelativeToCarousel(Widget widget)
-	
+
 	def protected int getChildPanelCurrentPosition()
 
 	def protected int getMeasure()

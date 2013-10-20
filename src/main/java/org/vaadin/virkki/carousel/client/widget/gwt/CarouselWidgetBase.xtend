@@ -39,6 +39,7 @@ abstract class CarouselWidgetBase extends FocusPanel {
 	@Property CarouselLoadMode loadMode
 	HandlerRegistration arrowKeysHandler
 	HandlerRegistration mouseWheelHandler
+	HandlerRegistration tabHandler
 
 	new() {
 		styleName = STYLE_NAME
@@ -82,7 +83,7 @@ abstract class CarouselWidgetBase extends FocusPanel {
 	def setArrowKeysMode(ArrowKeysMode arrowKeysMode) {
 		arrowKeysHandler?.removeHandler
 		arrowKeysHandler = if (arrowKeysMode ?: arrowKeysMode != ArrowKeysMode::DISABLED) {
-			arrowKeysHandler = Event::addNativePreviewHandler [
+			arrowKeysHandler = Event::addNativePreviewHandler[
 				if (Event::getTypeInt(nativeEvent.type) == Event::ONKEYDOWN &&
 					(arrowKeysMode == ArrowKeysMode::ALWAYS || hasFocus)) {
 					switch (nativeEvent.keyCode) {
@@ -121,6 +122,26 @@ abstract class CarouselWidgetBase extends FocusPanel {
 		widget.parent => [
 			if(it != null) scrollToPanelIndex(childPanel.getWidgetIndex(it))
 		]
+	}
+
+	def hideNonVisibleWidgets() {
+		widgets.forEach[visible = it == selectedWidget]
+	}
+
+	def unhideAllWidgets() {
+		widgets.forEach[visible = true]
+	}
+
+	def setTabKeyEnabled(boolean enabled) {
+		tabHandler?.removeHandler
+		if (!enabled) {
+			tabHandler = Event::addNativePreviewHandler [
+				if (nativeEvent.keyCode == KeyCodes::KEY_TAB) {
+					nativeEvent.preventDefault
+					nativeEvent.stopPropagation
+				}
+			]
+		}
 	}
 
 	def protected void scrollToPanelIndex(int _index)

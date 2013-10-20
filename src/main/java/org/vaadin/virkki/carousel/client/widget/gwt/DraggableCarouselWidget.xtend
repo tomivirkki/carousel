@@ -37,6 +37,7 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 
 	def private onDragStart(int position) {
 		if (widgets.size > 1) {
+			unhideAllWidgets
 			panelStartPosition = childPanelCurrentPosition
 			startPosition = position
 			runTimer.cancel
@@ -79,10 +80,16 @@ abstract class DraggableCarouselWidget extends AnimatedCarouselWidget {
 		if (velocityShift != 0) {
 			scroll(velocityShift)
 		} else {
-			val dragLength = (startPosition - lastPosition) / measure as double
-			var dragShift = if(Math::abs(dragLength) < 0.5) 0 else Math::signum(dragLength) as int
+			val dragPixels = startPosition - lastPosition
+			if (Math::abs(dragPixels) < 5) {
+				setChildPanelPosition(index * -measure - currentMargin)
+				hideNonVisibleWidgets			
+			} else {
+				val dragLength = dragPixels / measure as double
+				var dragShift = if(Math::abs(dragLength) < 0.5) 0 else Math::signum(dragLength) as int
 
-			scroll(dragShift)
+				scroll(dragShift)
+			}
 		}
 
 		moveHandler?.removeHandler
